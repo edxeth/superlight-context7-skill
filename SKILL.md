@@ -1,8 +1,6 @@
 ---
 name: context7
 description: Fetches up-to-date third-party library documentation via the Context7 v2 REST API. Use when working with external packages and needing current API references, code examples, migration guides, or resolving package errors (stack traces, version mismatches, deprecated methods).
-allowed-tools: [bash]
-user-invocable: true
 ---
 
 # Context7 Documentation Lookup
