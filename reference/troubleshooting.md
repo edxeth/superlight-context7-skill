@@ -5,7 +5,7 @@
 | Error | Cause | Action |
 |-------|-------|--------|
 | No results | Library not indexed | Inform user: "Context7 has no docs for [X]. Proceed with general knowledge?" |
-| 429 Too Many Requests | Rate limit exceeded | Wait 30s and retry, or proceed with caution |
+| 429 Too Many Requests | Rate limit exceeded | Script auto-retries with next API key; fails only after all keys exhausted |
 | 5xx Server Error | Context7 service issue | Fall back to training data, note uncertainty |
 | Empty response | Query too broad or library misconfigured | Refine query with more specific terms |
 
@@ -15,7 +15,7 @@
 # Single API key
 export CONTEXT7_API_KEY="ctx7sk_..."
 
-# Multiple API keys (comma-separated) - randomly rotated for even distribution
+# Multiple API keys (comma-separated) - rotated with automatic 429 failover
 export CONTEXT7_API_KEY="ctx7sk_key1,ctx7sk_key2,ctx7sk_key3"
 
 # Get a key at: https://context7.com/dashboard

@@ -9,7 +9,7 @@ Fetch real-time library documentation via the Context7 v2 REST API. A superlight
 - **Token-efficient** — Minimal context overhead with progressive disclosure
 - **Agent-agnostic** — Works with Claude Code, Cursor, and other skill-compatible agents
 - **No MCP required** — Direct REST API integration via bash script
-- **Multi-key rotation** — Distribute requests across multiple API keys for higher rate limits
+- **Multi-key rotation** — Distribute requests across multiple API keys with automatic 429 failover
 
 ## Why Use This Over Context7 MCP?
 
@@ -96,7 +96,7 @@ export CONTEXT7_API_KEY="ctx7sk_..."
 export CONTEXT7_API_KEY="ctx7sk_key1,ctx7sk_key2,ctx7sk_key3"
 ```
 
-When multiple keys are provided (comma-separated), the script rotates through them in round-robin order, ensuring even distribution of requests across all keys.
+When multiple keys are provided (comma-separated), the script rotates through them in round-robin order, ensuring even distribution of requests. If a key hits rate limits (429), the script automatically fails over to the next key and retries, only failing after all keys are exhausted across multiple retry rounds.
 
 Get an API key at [context7.com/dashboard](https://context7.com/dashboard).
 

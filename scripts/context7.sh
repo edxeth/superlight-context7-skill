@@ -8,6 +8,14 @@ set -euo pipefail
 readonly API_BASE="https://context7.com/api/v2"
 readonly API_KEYS="${CONTEXT7_API_KEY:-}"
 readonly KEY_STATE_FILE="${TMPDIR:-/tmp}/.context7-key-idx"
+readonly MAX_RETRIES=3
+readonly RETRY_DELAY=2
+
+get_key_count() {
+    [[ -z "$API_KEYS" ]] && { echo 0; return; }
+    IFS=',' read -ra keys <<< "$API_KEYS"
+    echo ${#keys[@]}
+}
 
 select_next_api_key() {
     [[ -z "$API_KEYS" ]] && return
@@ -32,19 +40,43 @@ urlencode() {
         || printf '%s' "$string"
 }
 
-# Build curl command with optional auth
 do_request() {
     local url="$1"
-    local api_key
-    api_key=$(select_next_api_key)
-    local -a curl_args=(-s -f --max-time 30)
+    local key_count attempts_per_round total_attempts max_attempts
+    key_count=$(get_key_count)
+    attempts_per_round=$((key_count > 1 ? key_count : 1))
+    total_attempts=0
+    max_attempts=$((attempts_per_round * MAX_RETRIES))
     
-    if [[ -n "$api_key" ]]; then
-        curl_args+=(-H "Authorization: Bearer $api_key")
-    fi
-    curl_args+=(-H "X-Context7-Source: claude-skill")
+    while [[ $total_attempts -lt $max_attempts ]]; do
+        local api_key http_code response
+        api_key=$(select_next_api_key)
+        
+        local -a curl_args=(-s -w "%{http_code}" --max-time 30)
+        [[ -n "$api_key" ]] && curl_args+=(-H "Authorization: Bearer $api_key")
+        curl_args+=(-H "X-Context7-Source: claude-skill")
+        
+        response=$(curl "${curl_args[@]}" "$url") || true
+        http_code="${response: -3}"
+        response="${response%???}"
+        
+        case "$http_code" in
+            200) echo "$response"; return 0 ;;
+            429)
+                ((total_attempts++))
+                if [[ $((total_attempts % attempts_per_round)) -eq 0 ]]; then
+                    sleep "$RETRY_DELAY"
+                fi
+                ;;
+            *) 
+                echo "ERROR: HTTP $http_code" >&2
+                return 1
+                ;;
+        esac
+    done
     
-    curl "${curl_args[@]}" "$url"
+    echo "ERROR: Rate limited on all keys after $MAX_RETRIES retries" >&2
+    return 1
 }
 
 # Search for library ID
