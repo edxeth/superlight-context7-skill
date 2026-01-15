@@ -6,7 +6,23 @@
 set -euo pipefail
 
 readonly API_BASE="https://context7.com/api/v2"
-readonly API_KEY="${CONTEXT7_API_KEY:-}"
+readonly API_KEYS="${CONTEXT7_API_KEY:-}"
+readonly KEY_STATE_FILE="${TMPDIR:-/tmp}/.context7-key-idx"
+
+select_next_api_key() {
+    [[ -z "$API_KEYS" ]] && return
+    
+    IFS=',' read -ra keys <<< "$API_KEYS"
+    local count=${#keys[@]}
+    
+    [[ $count -eq 1 ]] && { echo "${keys[0]}"; return; }
+    
+    local idx=0
+    [[ -f "$KEY_STATE_FILE" ]] && idx=$(cat "$KEY_STATE_FILE" 2>/dev/null || echo 0)
+    
+    echo "$(( (idx + 1) % count ))" > "$KEY_STATE_FILE"
+    echo "${keys[$((idx % count))]}"
+}
 
 # URL-encode a string (POSIX-compatible)
 urlencode() {
@@ -19,10 +35,12 @@ urlencode() {
 # Build curl command with optional auth
 do_request() {
     local url="$1"
+    local api_key
+    api_key=$(select_next_api_key)
     local -a curl_args=(-s -f --max-time 30)
     
-    if [[ -n "$API_KEY" ]]; then
-        curl_args+=(-H "Authorization: Bearer $API_KEY")
+    if [[ -n "$api_key" ]]; then
+        curl_args+=(-H "Authorization: Bearer $api_key")
     fi
     curl_args+=(-H "X-Context7-Source: claude-skill")
     
@@ -120,7 +138,8 @@ Examples:
   context7.sh docs /tanstack/query "useMutation v5 optimistic"
 
 Environment:
-  CONTEXT7_API_KEY    Optional API key for higher rate limits
+  CONTEXT7_API_KEY    API key(s) for higher rate limits
+                      Supports comma-separated keys for rotation
                       Get one at: https://context7.com/dashboard
 EOF
         ;;

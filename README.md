@@ -9,6 +9,7 @@ Fetch real-time library documentation via the Context7 v2 REST API. A superlight
 - **Token-efficient** — Minimal context overhead with progressive disclosure
 - **Agent-agnostic** — Works with Claude Code, Cursor, and other skill-compatible agents
 - **No MCP required** — Direct REST API integration via bash script
+- **Multi-key rotation** — Distribute requests across multiple API keys for higher rate limits
 
 ## Why Use This Over Context7 MCP?
 
@@ -17,7 +18,7 @@ Fetch real-time library documentation via the Context7 v2 REST API. A superlight
 | Context cost | ~500-2000 tokens always | **~60 tokens always** + ~340 on-demand |
 | Tool schemas | Always in context | None |
 | Setup | Requires MCP configuration | Drop-in skill directory |
-| Dependencies | Node.js runtime | bash, curl, jq |
+| Dependencies | Node.js runtime | bash, curl, jq (Linux/macOS) |
 
 Best for: Users who need library docs on-demand without persistent context overhead.
 
@@ -85,12 +86,24 @@ Uses Context7 v2 REST API:
 
 ## Configuration
 
+An API key is optional but recommended for higher rate limits.
+
 ```bash
-# Optional: Set API key for higher rate limits
+# Single API key
 export CONTEXT7_API_KEY="ctx7sk_..."
+
+# Multiple API keys for load distribution
+export CONTEXT7_API_KEY="ctx7sk_key1,ctx7sk_key2,ctx7sk_key3"
 ```
 
+When multiple keys are provided (comma-separated), the script rotates through them in round-robin order, ensuring even distribution of requests across all keys.
+
 Get an API key at [context7.com/dashboard](https://context7.com/dashboard).
+
+## Requirements
+
+- **Platforms**: Linux, macOS
+- **Dependencies**: bash, curl, jq
 
 ## Skill Metadata
 

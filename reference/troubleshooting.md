@@ -12,8 +12,11 @@
 ## Environment Configuration
 
 ```bash
-# Optional: API key for higher rate limits
+# Single API key
 export CONTEXT7_API_KEY="ctx7sk_..."
+
+# Multiple API keys (comma-separated) - randomly rotated for even distribution
+export CONTEXT7_API_KEY="ctx7sk_key1,ctx7sk_key2,ctx7sk_key3"
 
 # Get a key at: https://context7.com/dashboard
 ```
