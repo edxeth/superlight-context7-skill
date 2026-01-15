@@ -1,6 +1,6 @@
 # Superlight Context7 Skill
 
-Fetch real-time library documentation via the Context7 v2 REST API. A superlight agent skill for AI coding assistants — minimal tokens, maximum docs.
+Fetch real-time library documentation via the Context7 v2 REST API. A superlight agent skill for AI coding assistants — minimal tokens, maximum docs. Supports multiple API keys with round-robin rotation for higher rate limits.
 
 ## Features
 
