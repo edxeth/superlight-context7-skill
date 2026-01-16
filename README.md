@@ -38,19 +38,30 @@ Uses Claude's [progressive disclosure](https://docs.anthropic.com/en/docs/agents
 
 ## Installation
 
-### Claude Code
+### Quick Install (Recommended)
 
 ```bash
-# Clone to skills directory
-git clone https://github.com/edxeth/superlight-context7-skill.git ~/.claude/skills/context7
+npx add-skill edxeth/superlight-context7-skill
 ```
+
+The installer will prompt you to select which agents to install to (Claude Code, Cursor, OpenCode, Codex, Antigravity, etc.).
 
 ### Manual Installation
 
-Download and extract to your agent's skills directory:
+Clone directly to your agent's skills directory:
+
+```bash
+# Claude Code
+git clone https://github.com/edxeth/superlight-context7-skill.git ~/.claude/skills/context7
+
+# OpenCode
+git clone https://github.com/edxeth/superlight-context7-skill.git ~/.opencode/skill/context7
+```
+
+**Directory structure:**
 
 ```
-~/.claude/skills/context7/
+context7/
 ├── SKILL.md
 ├── reference/
 │   └── troubleshooting.md
