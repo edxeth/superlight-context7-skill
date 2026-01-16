@@ -15,10 +15,12 @@ Fetch real-time library documentation via the Context7 v2 REST API. A superlight
 
 | Aspect | MCP Server | This Skill |
 |--------|------------|------------|
-| Context cost | ~500-2000 tokens always | **~60 tokens always** + ~340 on-demand |
-| Tool schemas | Always in context | None |
+| Context cost | **~1,700 tokens always**¹ | **~63 tokens always** + ~424 on-demand |
+| Tool schemas | Always in context | None (progressive disclosure) |
 | Setup | Requires MCP configuration | Drop-in skill directory |
 | Dependencies | Node.js runtime | bash, curl, jq (Linux/macOS) |
+
+¹ *Measured Nov 2025 via `/context` command. [Source](https://github.com/anthropics/claude-code/issues/11085#issuecomment-3508840896)*
 
 Best for: Users who need library docs on-demand without persistent context overhead.
 
@@ -28,9 +30,11 @@ Uses Claude's [progressive disclosure](https://docs.anthropic.com/en/docs/agents
 
 | Level | When Loaded | Content | Tokens |
 |-------|-------------|---------|--------|
-| **Metadata** | Always (startup) | Skill description | ~60 |
-| **Instructions** | When triggered | SKILL.md protocol | ~340 |
-| **Resources** | As needed | troubleshooting.md | ~280 |
+| **Metadata** | Always (startup) | Skill description | ~63 |
+| **Instructions** | When triggered | SKILL.md protocol | ~424 |
+| **Resources** | As needed | troubleshooting.md | ~521 |
+
+*Token counts measured with [claudetokenizer.com](https://www.claudetokenizer.com/) (Claude Sonnet 4.5)*
 
 ## Installation
 
