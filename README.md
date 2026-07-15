@@ -48,26 +48,35 @@ The installer will prompt you to select which agents to install to (Claude Code,
 
 ### Manual Installation
 
-Clone directly to your agent's skills directory:
+Clone the repository, then copy the bundled skill directory into your agent's skills directory:
 
 ```bash
+git clone https://github.com/edxeth/superlight-context7-skill.git /tmp/superlight-context7-skill
+
 # Claude Code
-git clone https://github.com/edxeth/superlight-context7-skill.git ~/.claude/skills/context7
+mkdir -p ~/.claude/skills/context7
+cp -R /tmp/superlight-context7-skill/context7/. ~/.claude/skills/context7/
 
 # OpenCode
-git clone https://github.com/edxeth/superlight-context7-skill.git ~/.opencode/skill/context7
+mkdir -p ~/.opencode/skill/context7
+cp -R /tmp/superlight-context7-skill/context7/. ~/.opencode/skill/context7/
 ```
 
-**Directory structure:**
+**Repository structure:**
 
 ```
-context7/
-├── SKILL.md
-├── reference/
-│   └── troubleshooting.md
-└── scripts/
-    └── context7.sh
+superlight-context7-skill/
+└── context7/
+    ├── SKILL.md
+    ├── reference/
+    │   └── troubleshooting.md
+    └── scripts/
+        └── context7.sh
 ```
+
+Keeping `SKILL.md` inside the skill directory ensures `npx skills add` installs its scripts and references together.
+
+If you previously cloned the repository directly into an agent's `context7` directory, run the same `cp -R source/context7/. destination/context7/` command after pulling this update. The trailing `/.` copies the bundle contents into the existing directory instead of creating a broken `context7/context7/` nesting.
 
 ## Usage
 
@@ -83,11 +92,12 @@ The skill triggers automatically when working with external packages:
 ### Manual Invocation
 
 ```bash
-# Search for a library
-./scripts/context7.sh search "tanstack-query" "mutations"
+# From the repository root
+./context7/scripts/context7.sh search "tanstack-query" "mutations"
+./context7/scripts/context7.sh docs "/tanstack/query" "useMutation optimistic update"
 
-# Fetch documentation
-./scripts/context7.sh docs "/tanstack/query" "useMutation optimistic update"
+# From an installed context7 skill directory
+./scripts/context7.sh search "tanstack-query" "mutations"
 ```
 
 ## API Endpoints
